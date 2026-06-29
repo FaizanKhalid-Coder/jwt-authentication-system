@@ -1,0 +1,23 @@
+# Node.js dependencies
+node_modules/
+
+# Environment variables (sensitive data)
+.env
+
+# Logs
+logs/
+*.log
+
+# OS generated files (Mac/Windows)
+.DS_Store
+Thumbs.db
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Optional: If you have a local database dump
+data/
+dump/

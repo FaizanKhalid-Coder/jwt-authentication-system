@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Auth System</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f1f5f9;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .container { width: 100%; max-width: 420px; }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .logo i {
+      font-size: 40px;
+      color: #3b82f6;
+    }
+
+    .logo h1 {
+      font-size: 22px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-top: 8px;
+    }
+
+    .logo p {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    .tabs {
+      display: flex;
+      background: #f1f5f9;
+      border-radius: 10px;
+      padding: 4px;
+      gap: 4px;
+      margin-bottom: 1.5rem;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 9px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #64748b;
+      border: none;
+      background: transparent;
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      background: #ffffff;
+      color: #1e293b;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    .form-group { margin-bottom: 1rem; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #475569;
+      margin-bottom: 6px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: #94a3b8;
+    }
+
+    /* 👇 INPUT PADDING RIGHT INCREASED FOR EYE ICON */
+    input {
+      width: 100%;
+      padding: 10px 40px 10px 38px;  /* right padding 40px */
+      font-size: 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #f8fafc;
+      color: #1e293b;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      border-color: #3b82f6;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    }
+
+    /* 👇 EYE TOGGLE BUTTON STYLE */
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #94a3b8;
+      font-size: 18px;
+      background: transparent;
+      border: none;
+      padding: 0;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+
+    .toggle-password:hover {
+      color: #475569;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 11px;
+      font-size: 15px;
+      font-weight: 500;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: #ffffff;
+    }
+
+    .btn-primary:hover { background: #2563eb; }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #e2e8f0;
+      color: #475569;
+      margin-top: 1rem;
+    }
+
+    .btn-outline:hover { background: #f1f5f9; }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+      margin-top: 0.75rem;
+    }
+
+    .btn-danger:hover { background: #fecaca; }
+
+    .alert {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .alert-error {
+      background: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+
+    .alert-success {
+      background: #dcfce7;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+    }
+
+    .hidden { display: none !important; }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 26px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .profile-name {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1e293b;
+      text-align: center;
+    }
+
+    .profile-email {
+      font-size: 13px;
+      color: #64748b;
+      text-align: center;
+      margin-top: 4px;
+      margin-bottom: 1.5rem;
+    }
+
+    .info-table {
+      width: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 13px;
+    }
+
+    .info-row:last-child { border-bottom: none; }
+
+    .info-label {
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .info-value {
+      color: #1e293b;
+      font-weight: 500;
+      font-size: 12px;
+      font-family: monospace;
+    }
+
+    .badge-success {
+      background: #dcfce7;
+      color: #16a34a;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .token-section { margin-top: 1.25rem; }
+
+    .token-label {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .token-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 11px;
+      font-family: monospace;
+      color: #64748b;
+      word-break: break-all;
+      max-height: 70px;
+      overflow: hidden;
+      line-height: 1.5;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .token-box:hover { background: #f1f5f9; }
+
+    .copy-hint {
+      font-size: 11px;
+      color: #94a3b8;
+      text-align: right;
+      margin-top: 4px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #f1f5f9;
+      margin: 1.25rem 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- AUTH CARD -->
+  <div class="card" id="auth-card">
+    <div class="logo">
+      <i class="ti ti-shield-lock"></i>
+      <h1>Auth System</h1>
+      <p>Sign in or create your account</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('login')">Login</button>
+      <button class="tab" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <div id="alert-box" class="hidden"></div>
+
+    <!-- LOGIN FORM -->
+    <div id="login-form">
+      <div class="form-group">
+        <label>Email</label>
+        <div class="input-wrap">
+          <i class="ti ti-mail"></i>
+          <input type="email" id="login-email" placeholder="faizan@gmail.com" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrap">
+          <i class="ti ti-lock"></i>
+          <input type="password" id="login-password" placeholder="••••••" />
+          <!-- 👇 EYE TOGGLE BUTTON ADDED -->
+          <button type="button" class="toggle-password" onclick="togglePassword('login-password', this)">
+            <i class="ti ti-eye"></i>
+          </button>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="login-btn" onclick="handleLogin()">
+        <i class="ti ti-login"></i> Login
+      </button>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="register-form" class="hidden">
+      <div class="form-group">
+        <label>Username</label>
+        <div class="input-wrap">
+          <i class="ti ti-user"></i>
+          <input type="text" id="reg-username" placeholder="faizan" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <div class="input-wrap">
+          <i class="ti ti-mail"></i>
+          <input type="email" id="reg-email" placeholder="faizan@gmail.com" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrap">
+          <i class="ti ti-lock"></i>
+          <input type="password" id="reg-password" placeholder="••••••" />
+          <!-- 👇 EYE TOGGLE BUTTON ADDED -->
+          <button type="button" class="toggle-password" onclick="togglePassword('reg-password', this)">
+            <i class="ti ti-eye"></i>
+          </button>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="register-btn" onclick="handleRegister()">
+        <i class="ti ti-user-plus"></i> Create account
+      </button>
+    </div>
+  </div>
+
+  <!-- PROFILE CARD -->
+  <div class="card hidden" id="profile-card">
+    <div class="avatar" id="avatar-initials">FA</div>
+    <p class="profile-name" id="profile-username">Faizan</p>
+    <p class="profile-email" id="profile-email">faizan@gmail.com</p>
+
+    <div class="info-table">
+      <div class="info-row">
+        <span class="info-label"><i class="ti ti-id-badge"></i> User ID</span>
+        <span class="info-value" id="profile-id">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label"><i class="ti ti-circle-check"></i> Status</span>
+        <span class="badge-success">Authenticated</span>
+      </div>
+    </div>
+
+    <div class="token-section">
+      <p class="token-label">JWT Token (click to copy)</p>
+      <div class="token-box" id="token-display" onclick="copyToken()"></div>
+      <p class="copy-hint" id="copy-hint">Click token to copy</p>
+    </div>
+
+    <hr class="divider" />
+
+    <button class="btn btn-outline" onclick="fetchProfile()">
+      <i class="ti ti-refresh"></i> Refresh profile
+    </button>
+    <button class="btn btn-danger" onclick="handleLogout()">
+      <i class="ti ti-logout"></i> Logout
+    </button>
+  </div>
+
+</div>
+
+<script>
+  const API = '/api/auth';
+  let authToken = '';
+
+  // 👇 TOGGLE PASSWORD FUNCTION
+  function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.className = 'ti ti-eye-off';
+    } else {
+      input.type = 'password';
+      icon.className = 'ti ti-eye';
+    }
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach((t, i) => {
+      t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register'));
+    });
+    document.getElementById('login-form').classList.toggle('hidden', tab !== 'login');
+    document.getElementById('register-form').classList.toggle('hidden', tab !== 'register');
+    hideAlert();
+  }
+
+  function showAlert(msg, type) {
+    const box = document.getElementById('alert-box');
+    const icon = type === 'error' ? 'ti-alert-circle' : 'ti-circle-check';
+    box.className = `alert alert-${type}`;
+    box.innerHTML = `<i class="ti ${icon}"></i> ${msg}`;
+    box.classList.remove('hidden');
+  }
+
+  function hideAlert() {
+    document.getElementById('alert-box').classList.add('hidden');
+  }
+
+  function setLoading(btnId, loading, text) {
+    const btn = document.getElementById(btnId);
+    btn.disabled = loading;
+    btn.innerHTML = loading
+      ? '<div class="spinner"></div> Please wait...'
+      : text;
+  }
+
+  function showProfile(user, token) {
+    authToken = token;
+    localStorage.setItem('auth_token', token);
+    document.getElementById('auth-card').classList.add('hidden');
+    document.getElementById('profile-card').classList.remove('hidden');
+    const name = user.username || '';
+    document.getElementById('avatar-initials').textContent = name.substring(0, 2).toUpperCase();
+    document.getElementById('profile-username').textContent = name;
+    document.getElementById('profile-email').textContent = user.email;
+    document.getElementById('profile-id').textContent = user.id || user._id || '—';
+    document.getElementById('token-display').textContent = token;
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('auth_token');
+    authToken = '';
+    document.getElementById('profile-card').classList.add('hidden');
+    document.getElementById('auth-card').classList.remove('hidden');
+    switchTab('login');
+  }
+
+  function copyToken() {
+    navigator.clipboard.writeText(authToken).then(() => {
+      document.getElementById('copy-hint').textContent = 'Copied!';
+      setTimeout(() => {
+        document.getElementById('copy-hint').textContent = 'Click token to copy';
+      }, 2000);
+    });
+  }
+
+  async function fetchProfile() {
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+    try {
+      const res = await fetch(`${API}/profile`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) showProfile(data.user, token);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function handleLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    if (!email || !password) return showAlert('Please fill in all fields.', 'error');
+    setLoading('login-btn', true, '<i class="ti ti-login"></i> Login');
+    hideAlert();
+    try {
+      const res = await fetch(`${API}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Login failed');
+      showProfile(data.user, data.token);
+    } catch (e) {
+      showAlert(e.message, 'error');
+    } finally {
+      setLoading('login-btn', false, '<i class="ti ti-login"></i> Login');
+    }
+  }
+
+  async function handleRegister() {
+    const username = document.getElementById('reg-username').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const password = document.getElementById('reg-password').value;
+    if (!username || !email || !password) return showAlert('Please fill in all fields.', 'error');
+    setLoading('register-btn', true, '<i class="ti ti-user-plus"></i> Create account');
+    hideAlert();
+    try {
+      const res = await fetch(`${API}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Registration failed');
+      showProfile(data.user, data.token);
+    } catch (e) {
+      showAlert(e.message, 'error');
+    } finally {
+      setLoading('register-btn', false, '<i class="ti ti-user-plus"></i> Create account');
+    }
+  }
+
+  // Auto login if token exists
+  const saved = localStorage.getItem('auth_token');
+  if (saved) {
+    fetch(`${API}/profile`, { headers: { Authorization: `Bearer ${saved}` } })
+      .then(r => r.json())
+      .then(data => { if (data.success) showProfile(data.user, saved); })
+      .catch(() => {});
+  }
+</script>
+
+</body>
+</html>
